@@ -1,10 +1,10 @@
 
-#include <mcp_can.h>
+#include "mcp2518fd_can.h"
 #include <SPI.h>
 
 const int SPI_CS_PIN = 10;
 
-MCP_CAN CAN(SPI_CS_PIN); // Chip select
+mcp2518fd CAN(SPI_CS_PIN); // Chip select
 
 void setup() {
     Serial.begin(115200);

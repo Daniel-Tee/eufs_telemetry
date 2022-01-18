@@ -1,11 +1,11 @@
 
 #include <SPI.h>
-#include <mcp_can.h>
+#include "mcp2518fd_can.h"
 
 const int spiCSPin = 10;
 const int ledPin = 5; // With protection resistor
 
-MCP_CAN CAN(spiCSPin);
+mcp2518fd CAN(spiCSPin);
 
 void setup(){
     Serial.begin(115200);
