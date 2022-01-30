@@ -1,0 +1,68 @@
+File descriptions:
+
+
+bno055.c & bno055.h
+	Library files for the BNO055 sensor
+
+
+can.cpp & can.hpp
+	EUFS CAN module
+	Requires due_can.h
+	CAN_init()
+		Initialises the CAN module and library. Returns bool of success
+	CAN_task()
+		Checks if any CAN frames have been received into the CAN buffer. The record is updated with the incoming data.
+
+
+can_common.cpp & can_common.h
+	Library files for the CAN protocol
+
+
+ControllerV1.ino
+	EUFS Arduino project file. This ties everything together.
+	Init functions of the modules are called in setup(), and their success boolean is checked.
+	Update/task functions of the modules are called in loop().
+
+
+Dashboard.cpp & Dashboard.hpp
+	EUFS dashboard module. This prepares a data string to send to the dashboard over Bluetooth.
+	Dashboard_init()
+		Initialises the dashboard module and UART interface
+	Dashboard_update()
+		If the dashboard has not beed updated recently, a string of values to send is constructed and sent. This string is generated from the dashboard record.
+
+
+due_can.cpp & due_can.h
+	Library files for the Due built-in CAN controller
+	Requires can_common.h
+	
+Gyro.cpp & Gyro.hpp
+	EUFS Gyro module. This is mostly sample code I found online somewhere. It initialises and communicates with the BNO055 device.
+	Gyro_init()
+		Connects to the gyro and sets the operation mode, power mode, and clock mode.
+	Gyro_update()
+		Reads data from the gyro, accelerometer, and magnetometer into the gyro record.
+		
+
+IPS.cpp & IPS.hpp
+	EUFS IPS (interruptable power supply) module. This looks out for a dropping power supply in the event that the car power is turned off.
+	IPS_checkVoltage()
+		Returns true if the input voltage is determined to be stable and good.
+	
+Logging.cpp & Logging.hpp
+	EUFS logging module. This writes data to the SD card.
+	Logging_makeRecord()
+		Writes the argument string as a line to the SD card's log file.
+
+time.cpp & time.hpp
+	EUFS time module. This outputs a represenation of the current time.
+	Time_init()
+		Initialises the time module.
+	Time_task()
+		Calculates and stores the current time in the module's record.
+
+
+Some of the EUFS-designed modules have a _get_record() function. This returns a pointer to the module's record array. The array's length is specified in its first element, and all records using 32-bit items. The reason the system is designed this way is so that the record can be iterated over by generic code that doesn't have to understand the specifics of each EUFS module.
+If this is crap, then a future programmer can rip out the records and use structs instead with useful field names. Perhaps there is a nice C++ object-orientated way of doing this?
+
+The code aims to be very modular. The main Arduino file is about the same size as the rest of the EUFS code files (for perspective). 

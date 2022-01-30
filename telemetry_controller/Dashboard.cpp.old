@@ -1,0 +1,65 @@
+#include "Dashboard.hpp"
+
+#define BUFFER_LENGTH 19
+
+#include <string.h>
+#include <Arduino.h>
+
+#define RECORD_LENGTH 1
+uint32_t Record[RECORD_LENGTH+1];
+uint32_t* Dashboard_get_record() {
+	return Record;
+}
+
+typedef union sendBlock_u {
+	struct sendBlock_s {
+		char wheelSpeed[3];
+		char comma1[1];
+		char tps[3];
+		char comma2[1];
+		char rpm[5];
+		char comma3[1];
+		char warningEncoded[1];
+		char comma4[1];
+		char gear[1];
+		char delimiter[1];
+	} sendBlock_s;
+
+	char sendBlock_a[BUFFER_LENGTH];
+}
+sendBlock;
+sendBlock block;
+
+uint32_t last_run_time;
+
+void Dashboard_init() {
+	//First element of Record should be RECORD_LENGTH
+	Record[0] = RECORD_LENGTH;
+
+	Serial3.begin(115200);  // Baud rate for HC-05 
+	strcpy(block.sendBlock_s.wheelSpeed     , "050");
+	strcpy(block.sendBlock_s.comma1         , ",");
+	strcpy(block.sendBlock_s.tps            , "100");
+	strcpy(block.sendBlock_s.comma2         , ",");
+	strcpy(block.sendBlock_s.rpm            , "06500");
+	strcpy(block.sendBlock_s.comma3         , ",");
+	strcpy(block.sendBlock_s.warningEncoded , "0");
+	strcpy(block.sendBlock_s.comma4         , ",");
+	strcpy(block.sendBlock_s.gear           , "3");
+	strcpy(block.sendBlock_s.delimiter      , "\n");
+	
+	last_run_time = micros();
+}
+
+void Dashboard_update() {
+	//If at least 16ms has passed since the last update
+	if (micros() - last_run_time > 16000) {
+		last_run_time = micros();
+		
+		//Update block with data from the record
+		sprintf(block.sendBlock_s.rpm, "%05d", Record[1]);
+		block.sendBlock_s.comma3[0] = ',';
+		
+		Serial3.write(block.sendBlock_a);
+	}
+}
