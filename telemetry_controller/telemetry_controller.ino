@@ -25,7 +25,7 @@ Bluetooth
 #include <stdint.h>
 
 #include "Logging.hpp" //SD card logging
-#include "Dashboard.hpp"
+//#include "Dashboard.hpp"
 #include "time.hpp"
 #include "gyro.hpp"
 #include "can.hpp"
@@ -56,7 +56,7 @@ void setup() {
 	}
 	Serial.println("card initialized.");
 	
-	Dashboard_init();
+	//Dashboard_init();
 	Time_init();
 	//Gyro_init();
 	if (!CAN_init()) {
@@ -75,18 +75,18 @@ void loop() {
 	float wssFrequency = ((float*)CAN_get_record())[1];
 	float wssGroundSpeed = wssFrequency / 3;
 	
-	Dashboard_get_record()[1] = (uint32_t) wssGroundSpeed;
-	Dashboard_get_record()[3] = value * 13;
-	Dashboard_update();
+	// Dashboard_get_record()[1] = (uint32_t) wssGroundSpeed;
+	// Dashboard_get_record()[3] = value * 13;
+	// Dashboard_update();
 	Time_task();
 	//Gyro_update();
 	
 	uint32_t time = Time_get_record()[1];
-	uint32_t* gyro_data = Gyro_get_record();
+	//uint32_t* gyro_data = Gyro_get_record();
 	
-	sprintf(dataString, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+	sprintf(dataString, "%d,%d",
 		time,
-		gyro_data[1], gyro_data[2], gyro_data[3], gyro_data[4], gyro_data[5], gyro_data[6], gyro_data[7], gyro_data[8], gyro_data[9]
+		wssFrequency
 	);
 	
 	Logging_makeRecord(dataString);
